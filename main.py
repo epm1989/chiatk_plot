@@ -11,7 +11,7 @@ async def run_app():
     #plot = PlotController()
     #await plot.create()
 
-    await PlotController().delete_plot_temp_files(plot_id='89a016a2f891f900234f84ee6757da5d116b6cf375c7df0361cbe29a2551267f',
+    PlotController().delete_plot_temp_files(plot_id='26e166159e87c293b516cfa2355a7b56c44d1badaa7959515cdb5bf0c1bb8943',
                                                   t='/home/epm1989c7/Pictures/chia/temp')
 
 
