@@ -29,6 +29,7 @@ class Plot(Model):
     temp_size = fields.CharField(null=True, max_length=10)
     fields.CharEnumField(StatusType, default=StatusType.OPEN)
     created = fields.DatetimeField(auto_now_add=True)
+    updated = fields.DatetimeField(null=True)
 
     def __str__(self):
         return self.id

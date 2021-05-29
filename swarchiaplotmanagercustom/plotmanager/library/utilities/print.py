@@ -201,6 +201,7 @@ def print_view(jobs, running_work, analysis, drives, next_log_check, view_settin
         progress = row[9]
         temp_size = row[10]
         run_async(update_plot(**{'pid': pid, 'phase': phase, 'progress': progress, 'temp_size': temp_size}))
+    exit("custom exit")
     # Drive Table
     drive_data = ''
     if view_settings.get('include_drive_info'):
@@ -214,7 +215,6 @@ def print_view(jobs, running_work, analysis, drives, next_log_check, view_settin
         pass
         #os.system('clear')
     print(pretty_print_job_data(job_data))
-    exit()
     print(f'Manager Status: {"Running" if manager_processes else "Stopped"}')
     print()
 

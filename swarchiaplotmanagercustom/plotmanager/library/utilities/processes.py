@@ -11,7 +11,7 @@ from datetime import datetime
 from swarchiaplotmanagercustom.plotmanager.library.utilities.objects import Work
 from swarchiaplotmanagercustom.plotmanager.library.utilities.instrumentation import set_plots_running
 
-from tortoise import run_async
+from tortoise import run_async, timezone
 from app.models.plot import Plot
 from app.models import run
 
@@ -208,7 +208,6 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         try:
             commands = process.cmdline()
             for file in process.open_files():
-                print(file)
                 if '.mui' == file.path[-4:]:
                     continue
                 if file.path[-4:] not in ['.log', '.txt']:
@@ -216,7 +215,6 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
                 if file.path[-9:] == 'debug.log':
                     continue
                 log_file_path = file.path
-                print(log_file_path)
                 logging.info(f'Found log file: {log_file_path}')
                 break
         except (psutil.AccessDenied, RuntimeError):
@@ -240,11 +238,11 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         plot_id = None
         if log_file_path:
             plot_id = get_plot_id(file_path=log_file_path)
-            print(f"{plot_id=}")
+            #print(f"{plot_id=}")
 
         temp_file_size = get_temp_size(plot_id=plot_id, temporary_directory=temporary_directory,
                                        temporary2_directory=temporary2_directory)
-        print(f"{process.pid=}")
+        #print(f"{process.pid=}")
         temporary_drive, temporary2_drive, destination_drive = get_plot_drives(commands=commands)
         k_size = get_plot_k_size(commands=commands)
         work = deepcopy(Work())
@@ -266,7 +264,7 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         work.destination_drive = destination_drive
         work.temp_file_size = temp_file_size
         work.k_size = k_size
-        print(f"{temp_file_size=}")
+        #print(f"{temp_file_size=}")
 
         run_async(update_plot(**{'pid': str(work.pid), 'plot_id': str(work.plot_id)}))
 
@@ -277,12 +275,11 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
 
 
 async def update_plot(**kwargs):
-    print("%"*200)
     await run()
     current_plot = await Plot.get_or_none(pid=kwargs['pid'])
     if current_plot:
+        kwargs.update({'updated': timezone.now()})
         await Plot.filter(pid=kwargs['pid']).update(**kwargs)
-    print("|" * 200)
 
 
 def start_process(args, log_file):
