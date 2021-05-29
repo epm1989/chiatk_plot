@@ -5,3 +5,11 @@ aiosqlite==0.16.1
 dateparser==1.0.0
 psutil==5.8.0
 PyYAML==5.4.1
+
+
+#pip install fastapi
+#pip install uvicorn[standard]
+fastapi==0.65.1
+pydantic==1.8.2
+starlette==0.14.2
+uvicorn==0.13.4
