@@ -9,6 +9,22 @@ class StatusType(str, Enum):
     COMPLETED = 'COMPLETED'
     DELETED = 'DELETED'
 
+class StatusQueueType(str, Enum):
+    WAITING = 'WAITING'
+    RUNNING = 'RUNNING'
+    PROCESSED = 'PROCESSED'
+
+
+class Queue(Model):
+    id = fields.UUIDField(pk=True)
+    created = fields.DatetimeField(auto_now_add=True)
+    status = fields.CharEnumField(StatusQueueType, default=StatusQueueType.WAITING)
+    command = fields.CharField(max_length=1024)
+    plot = fields.OneToOneField('models.Plot', related_name='queue', null=True)
+
+    def __str__(self):
+        return self.id
+
 
 class Plot(Model):
 
@@ -27,7 +43,7 @@ class Plot(Model):
     phase = fields.CharField(null=True, max_length=2)
     progress = fields.CharField(null=True, max_length=10)
     temp_size = fields.CharField(null=True, max_length=10)
-    fields.CharEnumField(StatusType, default=StatusType.OPEN)
+    status = fields.CharEnumField(StatusType, default=StatusType.OPEN)
     created = fields.DatetimeField(auto_now_add=True)
     updated = fields.DatetimeField(null=True)
 

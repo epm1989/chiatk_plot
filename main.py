@@ -10,6 +10,7 @@ async def run_app():
 
     await run(generate_schemas=True)
     plot = PlotController()
+    #await plot.queue()
     await plot.create()
     await asyncio.sleep(2)
     #PlotController().delete_plot_temp_files(plot_id='26e166159e87c293b516cfa2355a7b56c44d1badaa7959515cdb5bf0c1bb8943',

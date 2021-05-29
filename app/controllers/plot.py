@@ -7,7 +7,7 @@ import re
 from typing import List, AnyStr
 from typing.io import TextIO
 
-from app.models.plot import Plot
+from app.models.plot import Plot, Queue, StatusQueueType
 
 from app.utils import is_windows
 
@@ -36,8 +36,7 @@ class PlotController:
         process = subprocess.Popen(command, stdout=log_file, stderr=log_file, shell=False, **kwargs)
         return process
 
-    async def create(self):
-
+    async def queue(self):
         command = ['/usr/lib/chia-blockchain/resources/app.asar.unpacked/daemon/chia',
                    'plots', 'create', '-k', self.k, '-b', self.b,
                    '-t', self.t, '-d', self.d,
@@ -45,6 +44,15 @@ class PlotController:
                    '-f', self.f,
                    '-p', self.p]
 
+        return await Queue.create(command=' '.join(command))
+
+    async def create(self):
+
+        task_pending = await Queue.filter(status=StatusQueueType.WAITING).order_by('created').limit(1)
+        if not task_pending:
+            return True
+        task = task_pending[0]
+        command = task.command.split(' ')
         unix_time = str(round(datetime.datetime.utcnow().timestamp()))
         log_file_path = './logs/temp_{{datetime}}.log'
         log_file_path = re.sub('{{datetime}}', unix_time, log_file_path)
@@ -52,9 +60,13 @@ class PlotController:
 
         process = self.start(command, log_file)
         if process:
-            await Plot.create(t=self.t, d=self.d, r=self.r, u=self.u,
-                              f=self.f, p=self.p, k=self.k, b=self.b,
-                              pid=str(process.pid), log_file=log_file_path)
+            plot = await Plot.create(t=self.t, d=self.d, r=self.r, u=self.u,
+                                     f=self.f, p=self.p, k=self.k, b=self.b,
+                                     pid=str(process.pid), log_file=log_file_path)
+            task.status = StatusQueueType.RUNNING
+            task.plot = plot
+            await task.save()
+
             return True
         return False
 
