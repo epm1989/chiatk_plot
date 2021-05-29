@@ -9,3 +9,7 @@ async def run(generate_schemas=False):
 
     if generate_schemas:
         await Tortoise.generate_schemas()
+
+
+async def close():
+    await Tortoise.close_connections()

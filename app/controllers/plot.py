@@ -86,6 +86,26 @@ class PlotController:
             if os.path.isfile(file):
                 os.remove(file)
 
+    @classmethod
+    async def stop(cls, pid: int):
+        if plot := await Plot.get_or_none(pid=str(pid)):
+            plot_id = plot.plot_id
+            t = plot.t
+            cls.kill(pid)
+            cls.delete_plot_temp_files(plot_id=plot_id, t=t)
+            queue = await Queue.get(plot=plot)
+            queue.status = StatusQueueType.STOPPED
+            await queue.save()
+            return True
+        return False
+
+
+
+
     @staticmethod
     def status():
         pass
+
+    @staticmethod
+    async def all():
+        return await Plot.filter().values('id', 'pid', 'plot_id')

@@ -13,6 +13,7 @@ class StatusQueueType(str, Enum):
     WAITING = 'WAITING'
     RUNNING = 'RUNNING'
     PROCESSED = 'PROCESSED'
+    STOPPED = 'STOPPED'
 
 
 class Queue(Model):
