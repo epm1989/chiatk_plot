@@ -128,11 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.venv
-venv
-.env
-venv
-**/*.log
-temp.log
-logs
+# Custom
 config.yaml
+*.bak

@@ -73,3 +73,7 @@ class PlotController:
         for file in files_name:
             if os.path.isfile(file):
                 os.remove(file)
+
+    @staticmethod
+    def status():
+        pass

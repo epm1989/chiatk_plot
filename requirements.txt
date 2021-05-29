@@ -1,3 +1,7 @@
 #pip install tortoise-orm[aiosqlite]
 tortoise-orm==0.17.3
 aiosqlite==0.16.1
+
+dateparser==1.0.0
+psutil==5.8.0
+PyYAML==5.4.1
