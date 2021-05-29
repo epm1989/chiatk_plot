@@ -21,7 +21,7 @@ async def stop(pid: int):
 async def read_item():
     result = await PlotController.all()
     print(result)
-    return {"item_id": 23, "q": 456}
+    return {"result": result}
 
 
 @api_router.get("/queue")

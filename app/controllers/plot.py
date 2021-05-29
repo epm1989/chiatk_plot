@@ -7,7 +7,7 @@ import re
 from typing import List, AnyStr
 from typing.io import TextIO
 
-from app.models.plot import Plot, Queue, StatusQueueType
+from app.models.plot import Plot, Queue, StatusQueueType, StatusType
 
 from app.utils import is_windows
 
@@ -72,7 +72,11 @@ class PlotController:
 
     @staticmethod
     def kill(pid: int):
-        os.kill(pid, signal.SIGTERM)
+        try:
+            os.kill(pid, signal.SIGTERM)
+            return True
+        except ProcessLookupError as err:
+            return False
 
     @staticmethod
     def delete_plot_temp_files(plot_id: str, t: str):
@@ -91,8 +95,12 @@ class PlotController:
         if plot := await Plot.get_or_none(pid=str(pid)):
             plot_id = plot.plot_id
             t = plot.t
-            cls.kill(pid)
+            if not cls.kill(pid):
+                return False
+            print(plot_id, t)
             cls.delete_plot_temp_files(plot_id=plot_id, t=t)
+            plot.status = StatusType.DELETED
+            await plot.save()
             queue = await Queue.get(plot=plot)
             queue.status = StatusQueueType.STOPPED
             await queue.save()
@@ -108,4 +116,4 @@ class PlotController:
 
     @staticmethod
     async def all():
-        return await Plot.filter().values('id', 'pid', 'plot_id')
+        return await Plot.filter(status=StatusType.OPEN).values('id', 'pid', 'plot_id')
