@@ -1,0 +1,3 @@
+#pip install tortoise-orm[aiosqlite]
+tortoise-orm==0.17.3
+aiosqlite==0.16.1
