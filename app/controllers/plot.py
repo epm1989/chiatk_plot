@@ -8,6 +8,7 @@ from typing import List, AnyStr
 from typing.io import TextIO
 
 from app.models.plot import Plot, Queue, StatusQueueType, StatusType
+from app.settings import working_dir
 
 from app.utils import is_windows
 
@@ -54,10 +55,8 @@ class PlotController:
         task = task_pending[0]
         command = task.command.split(' ')
         unix_time = str(round(datetime.datetime.utcnow().timestamp()))
-        log_file_path = './logs/temp_{{datetime}}.log'
+        log_file_path = working_dir + '/logs/temp_{{datetime}}.log'
         log_file_path = re.sub('{{datetime}}', unix_time, log_file_path)
-        with open(log_file_path, 'w') as f:
-            f.close()
         log_file = open(log_file_path, 'a')
 
         process = self.start(command, log_file)
@@ -91,6 +90,7 @@ class PlotController:
         for file in files_name:
             if os.path.isfile(file):
                 os.remove(file)
+        os.chdir(working_dir)
 
     @classmethod
     async def stop(cls, pid: int):
@@ -111,7 +111,7 @@ class PlotController:
 
     @staticmethod
     def refresh():
-        result = subprocess.Popen(['python', 'manager.py', 'status'])
+        result = subprocess.Popen(['python', f'{working_dir}/manager.py', 'status'])
         return result
 
     @staticmethod
