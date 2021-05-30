@@ -103,9 +103,9 @@ class PlotController:
     def kill(pid: int):
         try:
             os.kill(pid, signal.SIGTERM)
-            return True
+            return True, ''
         except ProcessLookupError as err:
-            return False
+            return False, repr(err)
 
     @staticmethod
     def delete_plot_temp_files(plot_id: str, t: str):
@@ -125,8 +125,9 @@ class PlotController:
         if plot := await Plot.get_or_none(pid=str(pid)):
             plot_id = plot.plot_id
             t = plot.t
-            if not cls.kill(pid):
-                return False
+            result, message = cls.kill(pid)
+            if not result:
+                return False, message
             print(plot_id, t)
             cls.delete_plot_temp_files(plot_id=plot_id, t=t)
             plot.status = StatusType.DELETED
@@ -134,8 +135,8 @@ class PlotController:
             queue = await Queue.get(plot=plot)
             queue.status = StatusQueueType.STOPPED
             await queue.save()
-            return True
-        return False
+            return True, f'stopped {pid}'
+        return False, 'none registry'
 
     @staticmethod
     def refresh():

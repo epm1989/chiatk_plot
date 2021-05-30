@@ -13,9 +13,9 @@ async def read_item(item_id: int, q: Optional[str] = None):
 
 @api_router.get("/stop/{pid}")
 async def stop(pid: int):
-    result = await PlotController.stop(pid)
+    result, message = await PlotController.stop(pid)
 
-    return {"result": result}
+    return {"result": result, 'message': message}
 
 
 @api_router.get("/all")
