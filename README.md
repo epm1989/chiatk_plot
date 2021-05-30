@@ -1,3 +1,9 @@
+# Install requirements
+```bash
+# python3.8
+pip install -r requirements.txt
+```  
+
 
 # SWAR re-use 
 
@@ -24,3 +30,17 @@ execute
 ```bash
 python manager.py status
 ```
+
+# Execution
+```bash
+/bin/bash ./start_api.sh
+```
+
+## endpoints
+
+    http://127.0.0.1:8000/plot/queue/status
+    http://127.0.0.1:8000/plot/queue/create
+    http://127.0.0.1:8000/plot/start
+    http://127.0.0.1:8000/plot/refresh
+    http://127.0.0.1:8000/plot/all
+    http://127.0.0.1:8000/plot/stop/{pid: integer}
