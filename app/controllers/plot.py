@@ -56,6 +56,8 @@ class PlotController:
         unix_time = str(round(datetime.datetime.utcnow().timestamp()))
         log_file_path = './logs/temp_{{datetime}}.log'
         log_file_path = re.sub('{{datetime}}', unix_time, log_file_path)
+        with open(log_file_path, 'w') as f:
+            f.close()
         log_file = open(log_file_path, 'a')
 
         process = self.start(command, log_file)
@@ -66,7 +68,7 @@ class PlotController:
             task.status = StatusQueueType.RUNNING
             task.plot = plot
             await task.save()
-
+            self.refresh()
             return True
         return False
 
@@ -107,13 +109,14 @@ class PlotController:
             return True
         return False
 
-
-
-
     @staticmethod
-    def status():
-        pass
+    def refresh():
+        result = subprocess.Popen(['python', 'manager.py', 'status'])
+        return result
 
     @staticmethod
     async def all():
-        return await Plot.filter(status=StatusType.OPEN).values('id', 'pid', 'plot_id')
+        PlotController.refresh()
+        return await Plot.filter(status=StatusType.OPEN).values('id', 'pid', 'plot_id', 't', 'd',
+                                                                'log_file', 'phase', 'progress',
+                                                                'temp_size', 'status')

@@ -17,11 +17,19 @@ async def stop(pid: int):
 
     return {"result": result}
 
+
 @api_router.get("/all")
 async def read_item():
     result = await PlotController.all()
     print(result)
     return {"result": result}
+
+
+@api_router.get("/refresh")
+async def refresh():
+    if PlotController.refresh():
+        return {"result": True}
+    return {"result": False}
 
 
 @api_router.get("/queue")
