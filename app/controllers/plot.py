@@ -25,7 +25,7 @@ class PlotController:
         self.p = '83c107cf162c1b22f0fcdedb998e9da81229f8ba1ad058ec3f9411e939ab90b4a24732726ec793c6a27b2598ef171976'
 
     @staticmethod
-    def start(command: List[AnyStr], log_file: TextIO):
+    def start_command(command: List[AnyStr], log_file: TextIO):
         kwargs = {}
 
         if is_windows():
@@ -37,7 +37,7 @@ class PlotController:
         process = subprocess.Popen(command, stdout=log_file, stderr=log_file, shell=False, **kwargs)
         return process
 
-    async def queue(self):
+    async def queue_status(self):
         plots_running = await self.all()
         queues_running = []
         for plot_run in plots_running:
@@ -47,12 +47,22 @@ class PlotController:
             queues_running.append(str(queue.id))
             await queue.save()
 
-        queues_not_waiting = await Queue.filter(status__not=StatusQueueType.WAITING).filter(status__not=StatusQueueType.STOPPED)
+        queues_not_waiting = await Queue.filter(status__not=StatusQueueType.WAITING).filter(
+            status__not=StatusQueueType.STOPPED)
 
         for queue_not_waiting in queues_not_waiting:
             if str(queue_not_waiting.id) not in queues_running:
                 queue_not_waiting.status = StatusQueueType.PROCESSED
                 await queue_not_waiting.save()
+
+        running = await Queue.filter(status=StatusQueueType.RUNNING).count()
+        waiting = await Queue.filter(status=StatusQueueType.WAITING).count()
+
+        return running, waiting
+
+
+
+    async def queue(self):
 
         command = ['/usr/lib/chia-blockchain/resources/app.asar.unpacked/daemon/chia',
                    'plots', 'create', '-k', self.k, '-b', self.b,
@@ -62,15 +72,14 @@ class PlotController:
                    '-p', self.p]
         queue_now = await Queue.create(command=' '.join(command))
 
-        running = await Queue.filter(status=StatusQueueType.RUNNING).count()
-        waiting = await Queue.filter(status=StatusQueueType.WAITING).count()
+        running, waiting = await self.queue_status()
         return queue_now, running, waiting
 
-    async def create(self):
+    async def start(self):
 
         task_pending = await Queue.filter(status=StatusQueueType.WAITING).order_by('created').limit(1)
         if not task_pending:
-            return True
+            return True, 'no pending task'
         task = task_pending[0]
         command = task.command.split(' ')
         unix_time = str(round(datetime.datetime.utcnow().timestamp()))
@@ -78,7 +87,7 @@ class PlotController:
         log_file_path = re.sub('{{datetime}}', unix_time, log_file_path)
         log_file = open(log_file_path, 'a')
 
-        process = self.start(command, log_file)
+        process = self.start_command(command, log_file)
         if process:
             plot = await Plot.create(t=self.t, d=self.d, r=self.r, u=self.u,
                                      f=self.f, p=self.p, k=self.k, b=self.b,
@@ -87,8 +96,8 @@ class PlotController:
             task.plot = plot
             await task.save()
             self.refresh()
-            return True
-        return False
+            return True, f'task launched, pid {process.pid}'
+        return False, 'nothing to do'
 
     @staticmethod
     def kill(pid: int):

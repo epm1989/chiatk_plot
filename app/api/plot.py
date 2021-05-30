@@ -32,7 +32,7 @@ async def refresh():
     return {"result": False}
 
 
-@api_router.get("/queue")
+@api_router.get("/queue/create")
 async def queue():
     plot = PlotController()
     queue, running, waiting = await plot.queue()
@@ -40,8 +40,15 @@ async def queue():
         return {"result": True, 'running': running, 'waiting': waiting}
     return {"result": False}
 
-@api_router.get("/create")
-async def create():
+
+@api_router.get("/queue/status")
+async def queue():
+    running, waiting = await PlotController().queue_status()
+    return {"result": True, 'running': running, 'waiting': waiting}
+
+
+@api_router.get("/start")
+async def start():
     plot = PlotController()
-    result = await plot.create()
-    return {"result": result}
+    result, message = await plot.start()
+    return {"result": result, 'message': message}
