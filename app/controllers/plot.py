@@ -38,14 +38,33 @@ class PlotController:
         return process
 
     async def queue(self):
+        plots_running = await self.all()
+        queues_running = []
+        for plot_run in plots_running:
+            plot = await Plot.get(pid=str(plot_run['pid']))
+            queue = await Queue.get(plot=plot)
+            queue.status = StatusQueueType.RUNNING
+            queues_running.append(str(queue.id))
+            await queue.save()
+
+        queues_not_waiting = await Queue.filter(status__not=StatusQueueType.WAITING).filter(status__not=StatusQueueType.STOPPED)
+
+        for queue_not_waiting in queues_not_waiting:
+            if str(queue_not_waiting.id) not in queues_running:
+                queue_not_waiting.status = StatusQueueType.PROCESSED
+                await queue_not_waiting.save()
+
         command = ['/usr/lib/chia-blockchain/resources/app.asar.unpacked/daemon/chia',
                    'plots', 'create', '-k', self.k, '-b', self.b,
                    '-t', self.t, '-d', self.d,
                    '-r', self.r, '-u', self.u,
                    '-f', self.f,
                    '-p', self.p]
+        queue_now = await Queue.create(command=' '.join(command))
 
-        return await Queue.create(command=' '.join(command))
+        running = await Queue.filter(status=StatusQueueType.RUNNING).count()
+        waiting = await Queue.filter(status=StatusQueueType.WAITING).count()
+        return queue_now, running, waiting
 
     async def create(self):
 

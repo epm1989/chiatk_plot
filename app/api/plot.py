@@ -35,9 +35,9 @@ async def refresh():
 @api_router.get("/queue")
 async def queue():
     plot = PlotController()
-    queue = await plot.queue()
+    queue, running, waiting = await plot.queue()
     if queue:
-        return {"result": True}
+        return {"result": True, 'running': running, 'waiting': waiting}
     return {"result": False}
 
 @api_router.get("/create")
