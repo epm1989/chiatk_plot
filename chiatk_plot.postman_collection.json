@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/plot/stop/17490",
+					"raw": "http://127.0.0.1:8000/plot/stop/20167",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -23,7 +23,7 @@
 					"path": [
 						"plot",
 						"stop",
-						"17490"
+						"20167"
 					]
 				}
 			},
@@ -53,12 +53,12 @@
 			"response": []
 		},
 		{
-			"name": "queue",
+			"name": "queue create",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/plot/queue",
+					"raw": "http://127.0.0.1:8000/plot/queue/create",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -69,19 +69,20 @@
 					"port": "8000",
 					"path": [
 						"plot",
-						"queue"
+						"queue",
+						"create"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "create",
+			"name": "queue status",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/plot/create",
+					"raw": "http://127.0.0.1:8000/plot/queue/status",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -92,7 +93,31 @@
 					"port": "8000",
 					"path": [
 						"plot",
-						"create"
+						"queue",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "start plot",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/plot/start",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"plot",
+						"start"
 					]
 				}
 			},
