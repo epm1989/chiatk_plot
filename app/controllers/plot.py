@@ -8,7 +8,7 @@ from typing import List, AnyStr
 from typing.io import TextIO
 
 from app.models.plot import Plot, Queue, StatusQueueType, StatusType
-from app.settings import working_dir
+from app.settings import working_dir, concurrent_plots
 
 from app.utils import is_windows
 
@@ -61,7 +61,6 @@ class PlotController:
         return running, waiting
 
 
-
     async def queue(self):
 
         command = ['/usr/lib/chia-blockchain/resources/app.asar.unpacked/daemon/chia',
@@ -80,6 +79,11 @@ class PlotController:
         task_pending = await Queue.filter(status=StatusQueueType.WAITING).order_by('created').limit(1)
         if not task_pending:
             return True, 'no pending task'
+
+        running, waiting = await self.queue_status()
+        if concurrent_plots <= running:
+            return False, f'max concurrent plot are {concurrent_plots}'
+
         task = task_pending[0]
         command = task.command.split(' ')
         unix_time = str(round(datetime.datetime.utcnow().timestamp()))
