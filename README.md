@@ -1,5 +1,12 @@
 
 # SWAR re-use 
+
+- check and modified config.yaml and set the chia_location, for instance 
+```bash
+chia_location: /usr/lib/chia-blockchain/resources/app.asar.unpacked/daemon/chia
+```  
+
+    
 modified swar chia plot manager only for check status
 
 we only use view command
