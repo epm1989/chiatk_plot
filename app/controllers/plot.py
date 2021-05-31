@@ -100,7 +100,7 @@ class PlotController:
             task.plot = plot
             await task.save()
             self.refresh()
-            return True, f'task launched, pid {process.pid}'
+            return True, f'task launched, pid-{process.pid}'
         return False, 'nothing to do'
 
     @staticmethod

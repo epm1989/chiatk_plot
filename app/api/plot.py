@@ -51,4 +51,4 @@ async def queue():
 async def start():
     plot = PlotController()
     result, message = await plot.start()
-    return {"result": result, 'message': message}
+    return {"result": result, 'message': message, 'pid': message.split('-')[-1]}

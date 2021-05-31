@@ -138,3 +138,4 @@ logs
 config.yaml.bck
 db.sqlite3-shm
 db.sqlite3-wal
+db_test.sqlite3
