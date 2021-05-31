@@ -194,7 +194,7 @@ def print_view(jobs, running_work, analysis, drives, next_log_check, view_settin
     #print(dir(running_work[list(running_work.keys())[0]]))
     job_data = get_job_data(jobs=jobs, running_work=running_work, view_settings=view_settings)
     
-    print(job_data)
+    # print(job_data)
     for row in job_data:
         pid = row[4]
         phase = row[7]

@@ -161,7 +161,7 @@ def determine_job_size(k_size):
 def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, next_job_work, chia_location,
                           log_directory, next_log_check, minimum_minutes_between_jobs, system_drives):
     drives_free_space = {}
-    print("5.1" * 200)
+
     for job in jobs:
         directories = [job.destination_directory]
         if isinstance(job.destination_directory, list):
@@ -177,7 +177,7 @@ def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, n
                 # I need to do this because if Manager fails, I don't want it to break.
                 free_space = None
             drives_free_space[drive] = free_space
-    print("5.2" * 200)
+
     logging.info(f'Free space before checking active jobs: {drives_free_space}')
     for pid, work in running_work.items():
         drive = work.destination_drive
@@ -187,13 +187,13 @@ def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, n
         drives_free_space[drive] -= work_size
         logging.info(drive)
     logging.info(f'Free space after checking active jobs: {drives_free_space}')
-    print("5.3" * 200)
+
     total_phase_1_count = 0
     for pid in running_work.keys():
         if running_work[pid].current_phase > 1:
             continue
         total_phase_1_count += 1
-    print("5.4" * 200)
+
     for i, job in enumerate(jobs):
         logging.info(f'Checking to queue work for job: {job.name}')
         if len(running_work.values()) >= max_concurrent:
@@ -255,7 +255,7 @@ def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, n
                 logging.info(f'Setting a new stagger for {j.name}. minimum_minutes_between_jobs is larger than assigned '
                              f'stagger. Min: {minimum_stagger}, Current: {next_job_work[j.name]}')
                 next_job_work[j.name] = minimum_stagger
-        print("5.4.1_" * 200)
+
         job, work = start_work(
             job=job,
             chia_location=chia_location,
@@ -277,7 +277,7 @@ def start_work(job, chia_location, log_directory, drives_free_space):
     nice_val = job.unix_process_priority
     if is_windows():
         nice_val = job.windows_process_priority
-    print("5.4.1_1" * 200)
+
     now = datetime.now()
     log_file_path = get_log_file_name(log_directory, job, now)
     logging.info(f'Job log file path: {log_file_path}')
@@ -285,10 +285,10 @@ def start_work(job, chia_location, log_directory, drives_free_space):
         get_target_directories(job, drives_free_space=drives_free_space)
     destination_directory = '/home/epm1989c7/Pictures/chia/persistent'
     temporary_directory = '/home/epm1989c7/Pictures/chia/temp'
-    print(destination_directory)
+    # print(destination_directory)
     if not destination_directory:
         return job, None
-    print("5.4.1_2" * 200)
+
     logging.info(f'Job temporary directory: {temporary_directory}')
     logging.info(f'Job destination directory: {destination_directory}')
 
@@ -323,7 +323,7 @@ def start_work(job, chia_location, log_directory, drives_free_space):
 
     log_file = open(log_file_path, 'a')
     logging.info(f'Starting process')
-    print(plot_command)
+
     process = start_process(args=plot_command, log_file=log_file)
     pid = process.pid
     logging.info(f'Started process: {pid}')
@@ -342,5 +342,5 @@ def start_work(job, chia_location, log_directory, drives_free_space):
     job.running_work = job.running_work + [pid]
     logging.info(f'Job total running: {job.total_running}')
     logging.info(f'Job running: {job.running_work}')
-    print(dir(work))
+
     return job, work

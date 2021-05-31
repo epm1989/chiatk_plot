@@ -42,7 +42,7 @@ logging.info(f"Found System Drives: {system_drives}")
 logging.info(f'Grabbing running plots.')
 jobs, running_work = get_running_plots(jobs=jobs, running_work=running_work,
                                        instrumentation_settings=instrumentation_settings)
-print("1"*200)
+
 for job in jobs:
     next_job_work[job.name] = datetime.now()
     max_date = None
@@ -63,7 +63,7 @@ for job in jobs:
         continue
     next_job_work[job.name] = max_date
     logging.info(f'{job.name} Found. Setting next stagger date to {next_job_work[job.name]}')
-print("2"*200)
+
 if minimum_minutes_between_jobs and len(running_work.keys()) > 0:
     logging.info(f'Checking to see if stagger needs to be altered due to minimum_minutes_between_jobs. '
                  f'Value: {minimum_minutes_between_jobs}')
@@ -80,7 +80,7 @@ if minimum_minutes_between_jobs and len(running_work.keys()) > 0:
         next_job_work[job_name] = minimum_stagger
         logging.info(f'Setting a new stagger for {job_name}. minimum_minutes_between_jobs is larger than assigned '
                      f'stagger. Minimum: {minimum_stagger}, Current: {next_job_work[job_name]}')
-print("3"*200)
+
 logging.info(f'Starting loop.')
 while has_active_jobs_and_work(jobs):
     # CHECK LOGS FOR DELETED WORK
@@ -88,12 +88,10 @@ while has_active_jobs_and_work(jobs):
     check_log_progress(jobs=jobs, running_work=running_work, progress_settings=progress_settings,
                        notification_settings=notification_settings, view_settings=view_settings,
                        instrumentation_settings=instrumentation_settings)
-    print("4" * 200)
     next_log_check = datetime.now() + timedelta(seconds=manager_check_interval)
 
     # DETERMINE IF JOB NEEDS TO START
     logging.info(f'Monitoring jobs to start.')
-    print("5" * 200)
     jobs, running_work, next_job_work, next_log_check = monitor_jobs_to_start(
         jobs=jobs,
         running_work=running_work,
@@ -106,7 +104,6 @@ while has_active_jobs_and_work(jobs):
         minimum_minutes_between_jobs=minimum_minutes_between_jobs,
         system_drives=system_drives,
     )
-    print("6" * 200)
 
     logging.info(f'Sleeping for {manager_check_interval} seconds.')
     time.sleep(manager_check_interval)

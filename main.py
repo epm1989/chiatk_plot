@@ -17,7 +17,7 @@ async def run_app():
     #                                              t='/home/epm1989c7/Pictures/chia/temp')
 
     result = subprocess.Popen(['python', 'manager.py', 'status'])
-    print(result)
+    #print(result)
 
 
 if __name__ == '__main__':

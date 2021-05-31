@@ -132,7 +132,7 @@ class PlotController:
             result, message = cls.kill(pid)
             if not result:
                 return False, message
-            print(plot_id, t)
+            # print(plot_id, t)
             cls.delete_plot_temp_files(plot_id=plot_id, t=t)
             plot.status = StatusType.DELETED
             await plot.save()

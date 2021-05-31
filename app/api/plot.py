@@ -21,7 +21,6 @@ async def stop(pid: int):
 @api_router.get("/all")
 async def read_item():
     result = await PlotController.all()
-    print(result)
     return {"result": result}
 
 
